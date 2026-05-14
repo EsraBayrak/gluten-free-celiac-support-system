@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
     getProducts,
-    addProduct
+    addProduct,
+    removeProduct
 } = require("../controllers/productController");
 
 /**
@@ -27,5 +28,22 @@ router.get("/", getProducts);
  *         description: Product created
  */
 router.post("/", addProduct);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Delete a product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Product deleted
+ */
+router.delete("/:id", removeProduct);
 
 module.exports = router;

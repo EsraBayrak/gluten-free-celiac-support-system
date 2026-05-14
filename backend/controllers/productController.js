@@ -1,13 +1,9 @@
 const productService = require("../services/productService");
 
 const getProducts = (req, res) => {
-
     productService.getAllProducts((err, products) => {
-
         if (err) {
-            return res.status(500).json({
-                message: "Database error."
-            });
+            return res.status(500).json({ message: "Database error." });
         }
 
         return res.status(200).json(products);
@@ -15,13 +11,7 @@ const getProducts = (req, res) => {
 };
 
 const addProduct = (req, res) => {
-
-    const {
-        name,
-        brand,
-        category,
-        glutenStatus
-    } = req.body;
+    const { name, brand, category, glutenStatus } = req.body;
 
     if (!name || !brand || !category || !glutenStatus) {
         return res.status(400).json({
@@ -30,11 +20,8 @@ const addProduct = (req, res) => {
     }
 
     productService.createProduct(req.body, (err, productId) => {
-
         if (err) {
-            return res.status(500).json({
-                message: "Database error."
-            });
+            return res.status(500).json({ message: "Database error." });
         }
 
         return res.status(201).json({
@@ -44,7 +31,26 @@ const addProduct = (req, res) => {
     });
 };
 
+const removeProduct = (req, res) => {
+    const { id } = req.params;
+
+    productService.deleteProduct(id, (err, changes) => {
+        if (err) {
+            return res.status(500).json({ message: "Database error." });
+        }
+
+        if (changes === 0) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        return res.status(200).json({
+            message: "Product deleted successfully."
+        });
+    });
+};
+
 module.exports = {
     getProducts,
-    addProduct
+    addProduct,
+    removeProduct
 };

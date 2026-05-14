@@ -1,26 +1,13 @@
 const db = require("../db");
 
 const getAllProducts = (callback) => {
-
-    db.all(
-        "SELECT * FROM products",
-        [],
-        (err, rows) => {
-            callback(err, rows);
-        }
-    );
+    db.all("SELECT * FROM products", [], (err, rows) => {
+        callback(err, rows);
+    });
 };
 
 const createProduct = (product, callback) => {
-
-    const {
-        name,
-        brand,
-        category,
-        glutenStatus,
-        ingredients,
-        notes
-    } = product;
+    const { name, brand, category, glutenStatus, ingredients, notes } = product;
 
     db.run(
         `
@@ -28,21 +15,21 @@ const createProduct = (product, callback) => {
         (name, brand, category, glutenStatus, ingredients, notes)
         VALUES (?, ?, ?, ?, ?, ?)
         `,
-        [
-            name,
-            brand,
-            category,
-            glutenStatus,
-            ingredients,
-            notes
-        ],
+        [name, brand, category, glutenStatus, ingredients, notes],
         function (err) {
             callback(err, this.lastID);
         }
     );
 };
 
+const deleteProduct = (id, callback) => {
+    db.run("DELETE FROM products WHERE id = ?", [id], function (err) {
+        callback(err, this.changes);
+    });
+};
+
 module.exports = {
     getAllProducts,
-    createProduct
+    createProduct,
+    deleteProduct
 };
