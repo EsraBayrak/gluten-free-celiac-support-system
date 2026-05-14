@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     getProducts,
     addProduct,
-    removeProduct
+    removeProduct,
+    editProduct
 } = require("../controllers/productController");
 
 /**
@@ -45,5 +46,22 @@ router.post("/", addProduct);
  *         description: Product deleted
  */
 router.delete("/:id", removeProduct);
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Update a product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Product updated
+ */
+router.put("/:id", editProduct);
+router.put("/:id", editProduct);
 
 module.exports = router;

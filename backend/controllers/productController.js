@@ -48,9 +48,34 @@ const removeProduct = (req, res) => {
         });
     });
 };
+const editProduct = (req, res) => {
+    const { id } = req.params;
+    const { name, brand, category, glutenStatus } = req.body;
+
+    if (!name || !brand || !category || !glutenStatus) {
+        return res.status(400).json({
+            message: "Required fields are missing."
+        });
+    }
+
+    productService.updateProduct(id, req.body, (err, changes) => {
+        if (err) {
+            return res.status(500).json({ message: "Database error." });
+        }
+
+        if (changes === 0) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        return res.status(200).json({
+            message: "Product updated successfully."
+        });
+    });
+};
 
 module.exports = {
     getProducts,
     addProduct,
-    removeProduct
+    removeProduct,
+    editProduct
 };
