@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Gluten-Free Celiac Support System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>Gluten-Free Celiac Support System</h2>
+        <button id="logoutBtn">Logout</button>
+    </header>
+
+    <main class="dashboard">
+        <section class="stats">
+            <div class="card">
+                <h3>Total Products</h3>
+                <p id="totalProducts">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Safe Products</h3>
+                <p id="safeProducts">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Risky Products</h3>
+                <p id="riskyProducts">0</p>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2>Add Gluten-Free Product</h2>
+
+            <form id="productForm">
+                <input type="text" id="name" placeholder="Product Name" required>
+                <input type="text" id="brand" placeholder="Brand" required>
+                <input type="text" id="category" placeholder="Category" required>
+
+                <select id="glutenStatus" required>
+                    <option value="">Select Gluten Status</option>
+                    <option value="Safe">Safe</option>
+                    <option value="Risky">Risky</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+
+                <textarea id="ingredients" placeholder="Ingredients"></textarea>
+                <textarea id="notes" placeholder="Notes"></textarea>
+
+                <button type="submit">Add Product</button>
+            </form>
+        </section>
+
+        <section class="table-section">
+            <h2>Product List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Ingredients</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
