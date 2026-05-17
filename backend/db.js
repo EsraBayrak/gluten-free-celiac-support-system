@@ -19,17 +19,25 @@ db.serialize(() => {
     `);
 
     db.run(`
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            brand TEXT NOT NULL,
-            category TEXT NOT NULL,
-            glutenStatus TEXT NOT NULL,
-            ingredients TEXT,
-            notes TEXT,
-            favorite INTEGER DEFAULT 0
-        )
-    `);
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    brand TEXT NOT NULL,
+    category TEXT NOT NULL,
+    glutenStatus TEXT NOT NULL,
+    ingredients TEXT,
+    notes TEXT,
+    favorite INTEGER DEFAULT 0,
+    userId INTEGER
+)
+`);
+    db.run(`
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+)
+`);
 
     db.get(
         "SELECT * FROM users WHERE email = ?",

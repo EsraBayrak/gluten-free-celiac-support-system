@@ -1,7 +1,7 @@
 const productService = require("../services/productService");
 
 const getProducts = (req, res) => {
-    productService.getAllProducts((err, products) => {
+    productService.getProductsByUserId(req.user.id, (err, products) => {
         if (err) {
             return res.status(500).json({ message: "Database error." });
         }
@@ -18,8 +18,11 @@ const addProduct = (req, res) => {
             message: "Required fields are missing."
         });
     }
-
-    productService.createProduct(req.body, (err, productId) => {
+const productData = {
+    ...req.body,
+    userId: req.user.id
+};
+    productService.createProduct(productData, (err, productId) => {
         if (err) {
             return res.status(500).json({ message: "Database error." });
         }

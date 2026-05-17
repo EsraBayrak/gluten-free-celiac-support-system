@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middleware/authMiddleware");
 
 const {
     getProducts,
@@ -17,7 +18,7 @@ const {
  *       200:
  *         description: Product list
  */
-router.get("/", getProducts);
+router.get("/", verifyToken, getProducts);
 
 /**
  * @swagger
@@ -28,7 +29,8 @@ router.get("/", getProducts);
  *       201:
  *         description: Product created
  */
-router.post("/", addProduct);
+router.post("/", verifyToken, addProduct);
+
 
 /**
  * @swagger
@@ -45,7 +47,7 @@ router.post("/", addProduct);
  *       200:
  *         description: Product deleted
  */
-router.delete("/:id", removeProduct);
+router.delete("/:id", verifyToken, removeProduct);
 /**
  * @swagger
  * /api/products/{id}:
@@ -61,7 +63,7 @@ router.delete("/:id", removeProduct);
  *       200:
  *         description: Product updated
  */
-router.put("/:id", editProduct);
-router.put("/:id", editProduct);
+router.put("/:id", verifyToken, editProduct);
+
 
 module.exports = router;
