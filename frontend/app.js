@@ -34,7 +34,7 @@ if (loginForm) {
                 loginMessage.innerText = data.message;
 
                 localStorage.setItem("user", JSON.stringify(data.user));
-
+                localStorage.setItem("token", data.token);
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
                 }, 1000);
@@ -52,7 +52,14 @@ if (loginForm) {
         }
     });
 }
+function getAuthHeaders() {
+    const token = localStorage.getItem("token");
 
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
 const productForm = document.getElementById("productForm");
 
 if (productForm) {
@@ -76,9 +83,7 @@ if (productForm) {
             `${API_URL}/api/products${editId ? `/${editId}` : ""}`,
             {
                 method: editId ? "PUT" : "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(product)
             }
         );
@@ -95,7 +100,9 @@ if (productForm) {
 
 async function loadProducts() {
     
-    const response = await fetch(`${API_URL}/api/products`);
+    const response = await fetch(`${API_URL}/api/products`, {
+        headers: getAuthHeaders()
+    });
     const products = await response.json();
 
     const productTable = document.getElementById("productTable");
@@ -159,8 +166,9 @@ document.getElementById("safePercentage").innerText =
 async function deleteProduct(id) {
 
     await fetch(`${API_URL}/api/products/${id}`, {
-        method: "DELETE"
-    });
+    method: "DELETE",
+    headers: getAuthHeaders()
+});
 
     loadProducts();
 }
@@ -197,4 +205,39 @@ function editProduct(product) {
     localStorage.setItem("editProductId", product.id);
 
     document.querySelector("#productForm button").innerText = "Update Product";
+}
+const registerForm = document.getElementById("registerForm");
+
+if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("registerEmail").value;
+        const password = document.getElementById("registerPassword").value;
+
+        const response = await fetch(`${API_URL}/api/auth/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        const message = document.getElementById("registerMessage");
+
+        if (response.ok) {
+            message.style.color = "green";
+            message.innerText = "Registration successful!";
+
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1500);
+
+        } else {
+            message.style.color = "red";
+            message.innerText = data.message || "Registration failed.";
+        }
+    });
 }
