@@ -61,6 +61,8 @@ if (productForm) {
     productForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const editId = localStorage.getItem("editProductId");
+
         const product = {
             name: document.getElementById("name").value,
             brand: document.getElementById("brand").value,
@@ -70,20 +72,29 @@ if (productForm) {
             notes: document.getElementById("notes").value
         };
 
-        await fetch(`${API_URL}/api/products`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(product)
-        });
+        await fetch(
+            `${API_URL}/api/products${editId ? `/${editId}` : ""}`,
+            {
+                method: editId ? "PUT" : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(product)
+            }
+        );
 
         productForm.reset();
+
+        localStorage.removeItem("editProductId");
+
+        document.querySelector("#productForm button").innerText = "Add Product";
+
         loadProducts();
     });
 }
 
 async function loadProducts() {
+    
     const response = await fetch(`${API_URL}/api/products`);
     const products = await response.json();
 
@@ -95,8 +106,21 @@ async function loadProducts() {
 
     let safeCount = 0;
     let riskyCount = 0;
+    
 
-    products.forEach(product => {
+    const searchInput = document.getElementById("searchInput");
+
+let filteredProducts = products;
+
+if (searchInput && searchInput.value.trim() !== "") {
+
+    filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchInput.value.toLowerCase())
+    );
+}
+
+   filteredProducts.forEach(product => {
         if (product.glutenStatus === "Safe") safeCount++;
         if (product.glutenStatus === "Risky") riskyCount++;
 
@@ -108,6 +132,14 @@ async function loadProducts() {
                 <td>${product.glutenStatus}</td>
                 <td>${product.ingredients || "-"}</td>
                 <td>${product.notes || "-"}</td>
+                <td>
+                <button onclick='editProduct(${JSON.stringify(product)})'>
+                Edit
+                </button>
+                <button onclick="deleteProduct(${product.id})">
+                Delete
+                </button>
+            </td>
             </tr>
         `;
     });
@@ -115,4 +147,54 @@ async function loadProducts() {
     document.getElementById("totalProducts").innerText = products.length;
     document.getElementById("safeProducts").innerText = safeCount;
     document.getElementById("riskyProducts").innerText = riskyCount;
+    let safePercentage = 0;
+
+if (products.length > 0) {
+    safePercentage = Math.round((safeCount / products.length) * 100);
+}
+
+document.getElementById("safePercentage").innerText =
+    safePercentage + "%";
+}
+async function deleteProduct(id) {
+
+    await fetch(`${API_URL}/api/products/${id}`, {
+        method: "DELETE"
+    });
+
+    loadProducts();
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", () => {
+
+        localStorage.removeItem("user");
+
+        window.location.href = "login.html";
+    });
+}
+
+const searchInputElement = document.getElementById("searchInput");
+
+if (searchInputElement) {
+
+    searchInputElement.addEventListener("input", () => {
+        loadProducts();
+    });
+}
+
+function editProduct(product) {
+    document.getElementById("name").value = product.name;
+    document.getElementById("brand").value = product.brand;
+    document.getElementById("category").value = product.category;
+    document.getElementById("glutenStatus").value = product.glutenStatus;
+    document.getElementById("ingredients").value = product.ingredients || "";
+    document.getElementById("notes").value = product.notes || "";
+
+    localStorage.setItem("editProductId", product.id);
+
+    document.querySelector("#productForm button").innerText = "Update Product";
 }
